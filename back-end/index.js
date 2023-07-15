@@ -7,18 +7,29 @@ const client = new MongoClient(uri);
 
 app.use(express.json());
 
-app.get('/students', async (req, res) => {
-  try {
-    await client.connect();
-    const db = client.db('StudentManagementSystem');
-    const students = db.collection('Student');
-    const allStudents = await students.find({}).toArray();
-    res.json(allStudents);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('An error occurred while retrieving students');
-  }
+// Add this code before any other routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
 });
+
+app.get('/students', async (req, res) => {
+    try {
+      await client.connect();
+      const db = client.db('StudentManagementSystem');
+      const students = db.collection('Student');
+      const allStudents = await students.find({}).toArray();
+      res.json(allStudents);
+    } catch (err) {
+      console.error(err); // Log the error message to the console
+      res.status(500).send('An error occurred while retrieving students');
+    }
+  });
+  
 
 app.post('/students', async (req, res) => {
   try {
