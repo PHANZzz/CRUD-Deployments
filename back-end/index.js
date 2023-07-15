@@ -6,6 +6,10 @@ const uri = "mongodb+srv://sophan:sophan%40123@cluster0.r3agzsk.mongodb.net/?ret
 const client = new MongoClient(uri);
 
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header('Content-Security-Policy', "default-src 'none'; font-src https://fonts.gstatic.com; img-src *");
+  next();
+});
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
