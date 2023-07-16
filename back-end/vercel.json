@@ -5,14 +5,12 @@
             "use": "@vercel/node"
         }
     ],
-    "routes": [
-        {
-            "src": "/api/insert",
-            "dest": "/api/insert"
-        },
-        {
-            "src":"/(.*)",
-            "dest":"/"
-        }
-    ]
+    
+            "routes":[
+                {
+                    "src":"/(.*)",
+                    "dest":"/"
+                }
+            ]
+        
 }
