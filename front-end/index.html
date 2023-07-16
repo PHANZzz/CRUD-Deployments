@@ -1,197 +1,67 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Student Management System</title>
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
+    <title>Insert Data</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   </head>
   <body>
     <div class="container">
-      <h1>Student Management System</h1>
-      <h2>Create a new student</h2>
-      <form id="create-student-form">
+      <h1>Insert Data</h1>
+      <form id="insert-form">
         <div class="form-group">
-          <label for="name">Name:</label><br />
-          <input type="text" id="name" name="name" class="form-control" />
+          <label for="name">Name:</label>
+          <input type="text" class="form-control" id="name" name="name">
         </div>
         <div class="form-group">
-          <label for="email">Email:</label><br />
-          <input type="email" id="email" name="email" class="form-control" />
+          <label for="email">Email:</label>
+          <input type="email" class="form-control" id="email" name="email">
         </div>
         <div class="form-group">
-          <label for="age">Age:</label><br />
-          <input type="number" id="age" name="age" class="form-control" />
+          <label for="age">Age:</label>
+          <input type="number" class="form-control" id="age" name="age">
         </div>
         <div class="form-group">
-          <label for="address">Address:</label><br />
-          <input type="text" id="address" name="address" class="form-control" />
+          <label for="address">Address:</label>
+          <input type="text" class="form-control" id="address" name="address">
         </div>
-        <div class="form-group">
-          <label for="city">City:</label><br />
-          <input type="text" id="city" name="city" class="form-control" /><br /><br />
-        </div>
-        <input type="submit" value="Submit" class="btn btn-primary" />
-      </form>
-      <h2>All students</h2>
-      <table id="students-table" class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Age</th>
-            <th>Address</th>
-            <th>City</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-
-      <!-- Replace with the URL of your deployed API -->
-      <script>
-        const API_URL = 'https://crud-deployments.vercel.app';
-
-
-        async function fetchStudents() {
-          const res = await fetch(`${API_URL}/students`);
-          const students = await res.json();
-          const studentsTableBody = document.querySelector('#students-table tbody');
-          studentsTableBody.innerHTML = '';
-          for (const student of students) {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${student.name}</td>
-              <td>${student.email}</td>
-              <td>${student.age}</td>
-              <td>${student.address}</td>
-              <td>${student.city}</td>
-              <td>
-                <button data-id="${student._id}" class="update-button btn btn-secondary">Update</button>
-                <button data-id="${student._id}" class="delete-button btn btn-danger">Delete</button>
-              </td>
-            `;
-            studentsTableBody.appendChild(row);
-          }
-          const updateButtons = document.querySelectorAll('.update-button');
-          for (const updateButton of updateButtons) {
-            updateButton.addEventListener('click', showUpdateStudentForm);
-          }
-          const deleteButtons = document.querySelectorAll('.delete-button');
-          for (const deleteButton of deleteButtons) {
-            deleteButton.addEventListener('click', deleteStudent);
-          }
-        }
-
-        async function createStudent(event) {
-          event.preventDefault();
-          const newStudent = {
-            name: document.querySelector('#name').value,
-            email: document.querySelector('#email').value,
-            age: document.querySelector('#age').value,
-            address: document.querySelector('#address').value,
-            city: document.querySelector('#city').value,
-          };
-          await fetch(`${API_URL}/students`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newStudent),
-          });
-          fetchStudents();
-        }
-
-        function showUpdateStudentForm(event) {
-          const studentId = event.target.getAttribute('data-id');
-          const studentRow = event.target.parentElement.parentElement;
-          const name = studentRow.children[0].textContent;
-          const email = studentRow.children[1].textContent;
-          const age = studentRow.children[2].textContent;
-          const address = studentRow.children[3].textContent;
-          const city = studentRow.children[4].textContent;
-          document.querySelector('#update-student-form [name=id]').value = studentId;
-          document.querySelector('#update-student-form [name=name]').value = name;
-          document.querySelector('#update-student-form [name=email]').value = email;
-          document.querySelector('#update-student-form [name=age]').value = age;
-          document.querySelector('#update-student-form [name=address]').value = address;
-          document.querySelector('#update-student-form [name=city]').value = city;
-          document.querySelector('#create-student-form').style.display = 'none';
-          document.querySelector('#update-student-form').style.display = 'block';
-        }
-
-        async function updateStudent(event) {
-          event.preventDefault();
-          const studentId = document.querySelector(
-            '#update-student-form [name=id]'
-          ).value;
-          const updatedStudent = {
-            name: document.querySelector('#update-student-form [name=name]').value,
-            email: document.querySelector('#update-student-form [name=email]').value,
-            age: document.querySelector('#update-student-form [name=age]').value,
-            address: document.querySelector(
-              '#update-student-form [name=address]'
-            ).value,
-            city: document.querySelector('#update-student-form [name=city]').value,
-          };
-          await fetch(`${API_URL}/students/${studentId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedStudent),
-          });
-          fetchStudents();
-          document.querySelector('#create-student-form').style.display = 'block';
-          document.querySelector('#update-student-form').style.display = 'none';
-        }
-
-        async function deleteStudent(event) {
-          const studentId = event.target.getAttribute('data-id');
-          await fetch(`${API_URL}/students/${studentId}`, {
-            method: 'DELETE',
-          });
-          fetchStudents();
-        }
-
-        document
-          .querySelector('#create-student-form')
-          .addEventListener('submit', createStudent);
-        document
-          .querySelector('#update-student-form')
-          .addEventListener('submit', updateStudent);
-
-        fetchStudents();
-      </script>
-
-      <h2>Update a student</h2>
-      <form id="update-student-form" style="display: none;">
-        <input type="hidden" name="id" />
-        <div class="form-group">
-          <label for="name">Name:</label><br />
-          <input type="text" name="name" class="form-control" />
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label><br />
-          <input type="email" name="email" class="form-control" />
-        </div>
-        <div class="form-group">
-          <label for="age">Age:</label><br />
-          <input type="number" name="age" class="form-control" />
-        </div>
-        <div class="form-group">
-          <label for="address">Address:</label><br />
-          <input type="text" name="address" class="form-control" />
-        </div>
-        <div class="form-group">
-          <label for="city">City:</label><br />
-          <input type="text" name="city" class="form-control" /><br /><br />
-        </div>
-        <input type="submit" value="Submit" class="btn btn-primary" />
+        <button type="submit" class="btn btn-default">Submit</button>
       </form>
     </div>
+
+    <!-- Include jQuery and Bootstrap JS -->
+    <script src="<EUGPSCoordinates>ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="<EUGPSCoordinates>maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Add custom script to handle form submission -->
+    <script>
+      $(document).ready(function() {
+        $("#insert-form").on("submit", function(event) {
+          event.preventDefault();
+          // Get form data
+          var formData = {
+            name: $("#name").val(),
+            email: $("#email").val(),
+            age: $("#age").val(),
+            address: $("#address").val()
+          };
+          // Send data to server
+          $.ajax({
+            url: "https://crud-deployments.vercel.app/api/insert",
+            method: "POST",
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            success: function(data) {
+              // Handle successful response
+              console.log(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              // Handle error response
+              console.error(textStatus, errorThrown);
+            }
+          });
+        });
+      });
+    </script>
   </body>
 </html>

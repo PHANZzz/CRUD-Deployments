@@ -1,91 +1,45 @@
 const express = require('express');
 const app = express();
-const port = 3000;
-const { MongoClient } = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://sophan:sophan%40123@cluster0.r3agzsk.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri);
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 app.use(express.json());
-app.use((req, res, next) => {
-  res.header('Content-Security-Policy', "default-src 'none'; font-src https://fonts.gstatic.com; img-src *");
-  next();
-});
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept'
-    );
-    next();
-  });
-  
-app.get('/students', async (req, res) => {
-    try {
-      await client.connect();
-      const db = client.db('StudentManagementSystem');
-      const students = db.collection('Student');
-      const allStudents = await students.find({}).toArray();
-      res.json(allStudents);
-    } catch (err) {
-      console.error(err); // Log the error message to the console
-      res.status(500).send('An error occurred while retrieving students');
-    }
-  });
-  
-
-app.post('/students', async (req, res) => {
+app.post('/api/insert', async (req, res) => {
   try {
+    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    const db = client.db('StudentManagementSystem');
-    const students = db.collection('Student');
-    const newStudent = req.body;
-    const insertResult = await students.insertOne(newStudent);
-    res.status(201).json(insertResult.ops[0]);
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
+    // Get the database and collection
+    const db = client.db("StudentManagementSystem");
+    const collection = db.collection("Student");
+
+    // Insert a document into the collection
+    const result = await collection.insertOne(req.body);
+    console.log(`Inserted document with _id: ${result.insertedId}`);
+
+    res.status(201).json({ message: 'Document inserted successfully', insertedId: result.insertedId });
   } catch (err) {
     console.error(err);
-    res.status(500).send('An error occurred while creating a new student');
+    res.status(500).json({ message: 'An error occurred while inserting the document' });
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
   }
 });
 
-app.put('/students/:id', async (req, res) => {
-  try {
-    await client.connect();
-    const db = client.db('StudentManagementSystem');
-    const students = db.collection('Student');
-    const updatedStudent = req.body;
-    const updateResult = await students.updateOne(
-      { _id: new ObjectId(req.params.id) },
-      { $set: updatedStudent }
-    );
-    if (updateResult.matchedCount === 0) {
-      res.status(404).send('No student found with the given id');
-      return;
-    }
-    res.json(updatedStudent);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('An error occurred while updating the student');
-  }
-});
-
-app.delete('/students/:id', async (req, res) => {
-  try {
-    await client.connect();
-    const db = client.db('StudentManagementSystem');
-    const students = db.collection('Student');
-    const deleteResult = await students.deleteOne({ _id: new ObjectId(req.params.id) });
-    if (deleteResult.deletedCount === 0) {
-      res.status(404).send('No student found with the given id');
-      return;
-    }
-    res.status(204).send();
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('An error occurred while deleting the student');
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
 });
