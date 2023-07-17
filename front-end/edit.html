@@ -42,46 +42,48 @@
       const urlParams = new URLSearchParams(window.location.search);
       const id = urlParams.get('id');
 
-      // Retrieve the document from the database and display its data in the form
-      async function getDocument(id) {
-        const response = await fetch(`https://crud-deployments.vercel.app/api/get/${id}`);
-        const data = await response.json();
-        $("#name").val(data.name);
-        $("#email").val(data.email);
-        $("#age").val(data.age);
-        $("#address").val(data.address);
-      }
+   // Retrieve the document from the database and display its data in the form
+async function getDocument(id) {
+  const response = await fetch(`https://crud-deployments.vercel.app/api/get/${id}`);
+  const data = await response.json();
+  $("#name").val(data.name);
+  $("#email").val(data.email);
+  $("#age").val(data.age);
+  $("#address").val(data.address);
+}
+
       getDocument(id);
 
       // Handle form submission
-      $(document).ready(function() {
-        $("#edit-form").on("submit", function(event) {
-          event.preventDefault();
-          // Get form data
-          var formData = {
-            name: $("#name").val(),
-            email: $("#email").val(),
-            age: $("#age").val(),
-            address: $("#address").val()
-          };
-          // Send data to server
-          $.ajax({
-            url: `https://crud-deployments.vercel.app/api/update/${id}`,
-            method: "PUT",
-            data: JSON.stringify(formData),
-            contentType: "application/json",
-            success: function(data) {
-              // Handle successful response
-              console.log(data);
-              swal("Success!", "Data updated successfully!", "success");
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-              // Handle error response
-              console.error(textStatus, errorThrown);
-            }
-          });
-        });
-      });
+$(document).ready(function() {
+  $("#edit-form").on("submit", function(event) {
+    event.preventDefault();
+    // Get form data
+    var formData = {
+      name: $("#name").val(),
+      email: $("#email").val(),
+      age: $("#age").val(),
+      address: $("#address").val()
+    };
+    // Send data to server
+    $.ajax({
+      url: `https://crud-deployments.vercel.app/api/update/${id}`,
+      method: "PUT",
+      data: JSON.stringify(formData),
+      contentType: "application/json",
+      success: function(data) {
+        // Handle successful response
+        console.log(data);
+        swal("Success!", "Data updated successfully!", "success");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        // Handle error response
+        console.error(textStatus, errorThrown);
+      }
+    });
+  });
+});
+
     </script>
   </body>
 </html>
