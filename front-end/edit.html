@@ -73,6 +73,7 @@
             // Handle successful response
             console.log(data);
             swal("Success!", "Data updated successfully!", "success");
+            location.href = 'list.html';
           },
           error: function(jqXHR, textStatus, errorThrown) {
             // Handle error response
